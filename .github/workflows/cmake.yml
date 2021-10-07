@@ -1,0 +1,59 @@
+name: CMake
+
+on: [push]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    name: ${{ matrix.dist }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      max-parallel: 1
+      matrix:
+        dist: [ hirsute, focal ]
+
+    steps:
+      - name: Checkout current version
+        uses: actions/checkout@v2
+      
+      - name: Update Packages
+        run: dpkg-scanpackages --multiversion . > Packages
+        working-directory: ./dists/${{ matrix.dist }}
+        
+      - name : Gzip Packages
+        run: gzip -k -f Packages
+        working-directory: ./dists/${{ matrix.dist }}
+
+      - name : Update Release
+        run: apt-ftparchive release . > Release
+        working-directory: ./dists/${{ matrix.dist }}
+
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v3
+        with:
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ""
+
+      - name : Update Release.gpg
+        run: gpg --default-key "${{ steps.import_gpg.outputs.email }}" -abs -o - Release > Release.gpg
+        working-directory: ./dists/${{ matrix.dist }}
+
+      - name : Update InRelease
+        run: gpg --default-key "${{ steps.import_gpg.outputs.email }}" --clearsign -o - Release > InRelease
+        working-directory: ./dists/${{ matrix.dist }}
+        
+      - name: Commit
+        uses: EndBug/add-and-commit@v7
+        with:
+          add: '.'
+          author_name: Reinventing The Square Wheel
+          author_email: 92091993+cpprtsw@users.noreply.github.com
+          branch: main
+          cwd: '.'
+          message: 'Update PPA'
+          push: true
+
