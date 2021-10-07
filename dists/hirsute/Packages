@@ -1,0 +1,16 @@
+Package: mpm
+Version: 1.2.1
+Architecture: amd64
+Maintainer: Sébastien GUERRI <sebastien.guerri@apps.bmel.fr>
+Installed-Size: 3706
+Filename: ./mpm_1.2.1_amd64.deb
+Size: 794440
+MD5sum: 2c9a27255b32c8bc764f47836283d956
+SHA1: 41764a937120ff02f5fdcd9d0dfa4702789b9135
+SHA256: e64bbd3a81aa7bf7c5b9279041a996d56cccda6c0624bf2f706b970e10c71d1d
+Section: utils
+Priority: optional
+Homepage: https://github.com/sguerri/mpm
+Description: My Package Manager
+Vendor: Sébastien GUERRI <sebastien.guerri@apps.bmel.fr>
+
